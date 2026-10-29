@@ -1,0 +1,51 @@
+@startuml task1_object_pool
+title Завдання 1. Object Pool — видача автомобілів парку
+skinparam classAttributeIconSize 0
+
+class CarPool <<Object Pool>> {
+  - free : Deque<Car>
+  - inUse : Map<String, Car>
+  - waiting : Deque<String>
+  - all : List<Car>
+  + CarPool(fleet : String[][])
+  + acquire(client : String) : Car
+  + release(car : Car) : void
+  - issue(car : Car, client : String) : void
+  + printStats() : void
+}
+
+class Car <<Pooled Object>> {
+  - plate : String
+  - model : String
+  - mediaAccount : String
+  - navigatorAddresses : List<String>
+  - seatPosition : int
+  - trips : int
+  + Car(plate : String, model : String)
+  + personalize(client : String, address : String, seat : int) : void
+  + reset() : void
+  + getPlate() : String
+  + getTrips() : int
+}
+
+class Main <<Client>> {
+  {static} + scenario1ObjectPool() : void
+}
+
+class Logger <<Utility>> {
+  {static} + log(source : String, event : String) : void
+  {static} + expensive(source : String, event : String, millis : long) : void
+}
+
+CarPool "1" *-- "4" Car : керує фіксованим\nнабором
+CarPool "1" o-- "0..*" Car : free / inUse
+Main ..> CarPool : acquire / release
+CarPool ..> Logger
+Car ..> Logger
+
+note right of CarPool
+  Черга FIFO, якщо вільних авто немає.
+  release() скидає стан авто (reset)
+  і передає його першому в черзі.
+end note
+@enduml

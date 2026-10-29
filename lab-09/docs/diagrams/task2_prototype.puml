@@ -1,0 +1,49 @@
+@startuml task2_prototype
+title Завдання 2. Prototype — корпоративні тарифні плани
+skinparam classAttributeIconSize 0
+
+interface "Prototype<T>" as Prototype <<Prototype>> {
+  + copy() : T
+}
+
+class TariffPlan <<Concrete Prototype>> {
+  - name : String
+  - pricePerMinute : double
+  - pricePerKm : double
+  - speedLimit : int
+  - insurance : Insurance
+  - endZones : List<String>
+  - bonuses : List<String>
+  + TariffPlan(name, pricePerMinute, pricePerKm, speedLimit)
+  - TariffPlan(other : TariffPlan)
+  + copy() : TariffPlan
+  + setName(name : String) : void
+  + setPricePerMinute(p : double) : void
+  + getInsurance() : Insurance
+  + getEndZones() : List<String>
+}
+
+class Insurance <<Nested object>> {
+  - type : String
+  - deductible : int
+  + Insurance(type : String, deductible : int)
+  + Insurance(other : Insurance)
+  + set(type : String, deductible : int) : void
+}
+
+class Main <<Client>> {
+  {static} + scenario2Prototype() : void
+}
+
+TariffPlan ..|> Prototype : <<реалізація>>
+TariffPlan "1" *-- "1" Insurance : композиція\n(глибока копія)
+Main ..> TariffPlan : copy()
+
+note bottom of TariffPlan
+  copy() створює новий TariffPlan через
+  копіювальний конструктор: списки й Insurance
+  копіюються, тож зміни копії не торкаються еталона.
+  Дороге налаштування виконується лише в публічному
+  конструкторі.
+end note
+@enduml
