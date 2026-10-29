@@ -1,0 +1,32 @@
+@startuml task3_singleton
+title Завдання 3. Singleton — карта парку автомобілів
+skinparam classAttributeIconSize 0
+
+class FleetMap <<Singleton>> {
+  - reservations : Map<String, String>
+  - locations : Map<String, String>
+  - FleetMap()
+  + {static} getInstance() : FleetMap
+  + reserve(plate : String, who : String, client : String) : boolean
+  + getLocation(plate : String) : String
+  + id() : String
+}
+
+class "FleetMap.Holder" as Holder <<Lazy holder>> {
+  - {static} INSTANCE : FleetMap
+}
+
+class Main <<Client: диспетчер / застосунок>> {
+  {static} + scenario3Singleton() : void
+}
+
+Holder "1" --> "1" FleetMap : створює єдиний\nекземпляр
+FleetMap ..> Holder : getInstance()
+Main ..> FleetMap : getInstance()
+
+note right of FleetMap
+  Приватний конструктор — другу карту
+  створити неможливо. Диспетчер і застосунок
+  отримують той самий об'єкт.
+end note
+@enduml
